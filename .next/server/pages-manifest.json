@@ -2,8 +2,11 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/all": "pages/all.js",
-  "/top": "pages/top.js",
   "/admin": "pages/admin.js",
-  "/api/designs": "pages/api/designs.js"
+  "/top": "pages/top.js",
+  "/": "pages/index.js",
+  "/all": "pages/all.js",
+  "/api/voters-today": "pages/api/voters-today.js",
+  "/api/designs": "pages/api/designs.js",
+  "/api/vote": "pages/api/vote.js"
 }
