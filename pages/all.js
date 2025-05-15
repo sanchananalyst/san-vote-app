@@ -1,5 +1,11 @@
+import Navbar from '../components/Navbar';
 import DesignGallery from '../components/DesignGallery';
 
 export default function AllPage() {
-  return <DesignGallery section="all" />;
+  return (
+    <>
+      <Navbar active="all" />
+      <DesignGallery section="all" />
+    </>
+  );
 }

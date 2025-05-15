@@ -15,18 +15,19 @@ export default async function handler(req, res) {
   const designsRef = collection(firestore, 'designs');
 
   if (req.method === 'GET') {
-    try {
-      const q = query(designsRef, orderBy('votes', 'desc'));
-      const snapshot = await getDocs(q);
-      const designs = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      return res.status(200).json({ designs });
-    } catch (error) {
-      return res.status(500).json({ error: 'Failed to fetch designs' });
-    }
+  try {
+    const q = query(designsRef, orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    const designs = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    return res.status(200).json({ designs });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to fetch designs' });
   }
+}
+
   
  if (req.method === 'POST') {
   const { title, imageUrl } = req.body;
