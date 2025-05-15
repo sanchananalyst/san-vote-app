@@ -22,7 +22,7 @@ export default function Home() {
         const totalVotes = designs.reduce((sum, d) => sum + (d.votes || 0), 0);
         const totalDesigns = designs.length;
         const votersToday = votersRes.data.votersToday || 0;
-
+        console.log('[LIVE] Voters Today:', votersRes.data.votersToday); // ← add this
         setStats({ totalVotes, totalDesigns, votersToday });
       } catch (err) {
         console.error('Failed to fetch stats:', err);
