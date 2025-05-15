@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Analytics } from '@vercel/analytics/react'; //
 
 export default function Home() {
   const [stats, setStats] = useState({
@@ -74,6 +75,7 @@ export default function Home() {
           🎨 Designs Submitted: <span className="font-bold">{stats.totalDesigns}</span> &nbsp;•&nbsp;
           👥 Voters Today: <span className="font-bold">{stats.votersToday}</span>
         </div>
+        <Analytics /> {/* ✅ Vercel Analytics */}
       </div>
     </div>
   );
