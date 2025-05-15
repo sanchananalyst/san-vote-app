@@ -1,113 +1,47 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
-  const [designs, setDesigns] = useState([]);
-  const [votedId, setVotedId] = useState(null);
-
-  useEffect(() => {
-    const fetchDesigns = async () => {
-      try {
-        const res = await axios.get('/api/designs');
-        setDesigns(res.data.designs);
-      } catch (err) {
-        console.error('Failed to fetch designs:', err);
-      }
-    };
-    fetchDesigns();
-  }, []);
-
-  const vote = async (designId) => {
-    try {
-      setVotedId(designId);
-      await axios.post('/api/vote', { designId });
-
-      // Locally update vote count
-      setDesigns(prev =>
-        prev.map(d =>
-          d.id === designId ? { ...d, votes: (d.votes || 0) + 1 } : d
-        )
-      );
-    } catch (err) {
-      alert(err.response?.data?.error || 'Vote failed');
-    } finally {
-      setTimeout(() => setVotedId(null), 1000);
-    }
-  };
-
-
-  const filteredDesigns = designs.filter((d) => d.imageUrl && d.title);
-  const sortedDesigns = [...filteredDesigns]
-    .map((d) => ({ ...d, votes: typeof d.votes === 'number' ? d.votes : 0 }))
-    .sort((a, b) => b.votes - a.votes);
-
-  const top5 = sortedDesigns.filter(d => d.votes > 0).slice(0, 5);
-  const rest = sortedDesigns;
-
   return (
-    <div className="bg-gray-50 min-h-screen px-4 sm:px-6 md:px-12 py-8 max-w-screen-2xl mx-auto">
-      <h1 className="text-4xl font-bold mb-8">🔥 Top 5 Designs</h1>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-        {top5.map((d, i) => (
-          <div
-            key={d.id}
-            className={`relative bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden ${
-              votedId === d.id ? 'ring-2 ring-blue-400 scale-[1.02]' : ''
-            }`}
-          >
-            <img src={d.imageUrl} alt={d.title} className="w-full object-cover" />
-            <div className="p-4">
-              <h2 className="text-lg font-semibold mb-1">#{i + 1} {d.title}</h2>
-              <p className="text-sm text-gray-600">{d.votes} votes</p>
-              <button
-                onClick={() => vote(d.id)}
-                className={`mt-3 bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded text-sm font-medium transition ${
-                  votedId === d.id ? 'scale-105' : ''
-                }`}
-              >
-                {votedId === d.id ? 'Voted! ✅' : 'Vote'}
-              </button>
-              {votedId === d.id && (
-                <div className="absolute top-2 left-2 text-green-600 font-bold animate-bounce">+1</div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-yellow-50 to-pink-100 flex flex-col text-center px-4 py-8">
+      <nav className="w-full flex justify-center space-x-6 py-4 mb-6 text-sm font-semibold text-gray-700">
+        <Link href="/top" className="hover:underline">🔝 Top Designs</Link>
+        <Link href="/all" className="hover:underline">🖼 All Designs</Link>
+        <a href="https://sanchankantaro.myshopify.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">
+          🛍️ Merch Store
+        </a>
+      </nav>
 
-      <h1 className="text-3xl font-bold mb-6">🖼 All Designs</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {rest.map((d) => (
-          <div
-            key={d.id}
-            className={`relative bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden flex flex-col ${
-              votedId === d.id ? 'ring-2 ring-blue-400 scale-[1.02]' : ''
-            }`}
-          >
-            <img
-              src={d.imageUrl}
-              alt={d.title}
-              className="w-full h-auto object-cover"
-            />
-            <div className="p-4 flex flex-col flex-grow justify-between">
-              <div>
-                <h2 className="text-base font-semibold">{d.title}</h2>
-                <p className="text-sm text-gray-600">{d.votes} votes</p>
-              </div>
-              <button
-                onClick={() => vote(d.id)}
-                className={`mt-4 bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded text-sm font-medium transition ${
-                  votedId === d.id ? 'scale-105' : ''
-                }`}
-              >
-                {votedId === d.id ? 'Voted! ✅' : 'Vote'}
-              </button>
-              {votedId === d.id && (
-                <div className="absolute top-2 left-2 text-green-600 font-bold animate-bounce">+1</div>
-              )}
-            </div>
-          </div>
-        ))}
+      <div className="flex flex-col items-center justify-center flex-grow">
+        <div className="mb-8 animate-fadeIn">
+          <Image
+            src="/sanchan-hero.png"
+            alt="SanChan Hero"
+            width={220}
+            height={220}
+            className="rounded-full shadow-lg border-4 border-white"
+          />
+        </div>
+
+        <h1 className="text-5xl font-bold text-gray-900 mb-4 drop-shadow-lg">🎨 Welcome to the SanChan Design Vote</h1>
+        <p className="text-lg text-gray-700 mb-10 max-w-xl">Vote your favorite SanChan designs to the top! The most loved designs may become official merch. 🐾</p>
+
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <Link href="/top">
+            <button className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-full shadow-lg hover:scale-105 transition text-lg font-semibold">
+              🔝 View Top Designs
+            </button>
+          </Link>
+          <Link href="/all">
+            <button className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700 hover:scale-105 transition text-lg font-semibold">
+              🖼️ View All Designs
+            </button>
+          </Link>
+        </div>
+
+        <div className="mt-12 text-sm text-gray-600">
+          🗳 Total Votes Cast: <span className="font-bold">342</span> &nbsp;•&nbsp; 🎨 Designs Submitted: <span className="font-bold">27</span> &nbsp;•&nbsp; 👥 Voters Today: <span className="font-bold">98</span>
+        </div>
       </div>
     </div>
   );
