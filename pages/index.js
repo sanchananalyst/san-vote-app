@@ -1,7 +1,37 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export default function Home() {
+  const [stats, setStats] = useState({
+    totalVotes: 0,
+    totalDesigns: 0,
+    votersToday: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [designsRes, votersRes] = await Promise.all([
+          axios.get('/api/designs'),
+          axios.get('/api/voters-today')
+        ]);
+
+        const designs = designsRes.data.designs || [];
+        const totalVotes = designs.reduce((sum, d) => sum + (d.votes || 0), 0);
+        const totalDesigns = designs.length;
+        const votersToday = votersRes.data.votersToday || 0;
+
+        setStats({ totalVotes, totalDesigns, votersToday });
+      } catch (err) {
+        console.error('Failed to fetch stats:', err);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-yellow-50 to-pink-100 flex flex-col text-center px-4 py-8">
       <nav className="w-full flex justify-center space-x-6 py-4 mb-6 text-sm font-semibold text-gray-700">
@@ -40,7 +70,9 @@ export default function Home() {
         </div>
 
         <div className="mt-12 text-sm text-gray-600">
-          🗳 Total Votes Cast: <span className="font-bold">342</span> &nbsp;•&nbsp; 🎨 Designs Submitted: <span className="font-bold">27</span> &nbsp;•&nbsp; 👥 Voters Today: <span className="font-bold">98</span>
+          🗳 Total Votes Cast: <span className="font-bold">{stats.totalVotes}</span> &nbsp;•&nbsp;
+          🎨 Designs Submitted: <span className="font-bold">{stats.totalDesigns}</span> &nbsp;•&nbsp;
+          👥 Voters Today: <span className="font-bold">{stats.votersToday}</span>
         </div>
       </div>
     </div>

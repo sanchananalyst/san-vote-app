@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import axios from 'axios';
 
 export default function DesignGallery({ section }) {
@@ -75,7 +76,7 @@ export default function DesignGallery({ section }) {
         {visible.map((d, i) => (
           <div
             key={d.id}
-            className="bg-white rounded-lg shadow p-2 hover:shadow-md transition cursor-pointer"
+            className="bg-white rounded-lg shadow p-2 hover:shadow-md transition cursor-pointer relative"
             onClick={() => setSelected(d)}
           >
             {(section.includes('top') && !section.includes('all')) && (
@@ -83,12 +84,17 @@ export default function DesignGallery({ section }) {
                 #{i + 1}
               </div>
             )}
-            <img
-              src={d.imageUrl}
-              alt={d.title}
-              className="w-full object-contain max-h-[300px] sm:max-h-[400px] md:max-h-[500px] rounded mb-2"
-              style={{ margin: '0 auto' }}
-            />
+            <div className="relative w-full aspect-[4/3] mb-2">
+              <Image
+                src={d.imageUrl}
+                alt={d.title}
+                layout="fill"
+                objectFit="contain"
+                className="rounded"
+                placeholder="blur"
+                blurDataURL="/placeholder.png"
+              />
+            </div>
             <h2 className="text-base font-semibold">{d.title}</h2>
             <p className="text-sm text-gray-600">{d.votes} votes</p>
             <p className="text-xs text-gray-400">{Math.round((d.votes / maxVotes) * 100)}% of top</p>
@@ -116,10 +122,12 @@ export default function DesignGallery({ section }) {
           onClick={() => setSelected(null)}
         >
           <div className="max-w-full max-h-full p-4 animate-fadeIn" onClick={(e) => e.stopPropagation()}>
-            <img
+            <Image
               src={selected.imageUrl}
               alt={selected.title}
-              className="max-h-[90vh] max-w-[90vw] rounded-lg"
+              width={800}
+              height={800}
+              className="rounded-lg max-h-[90vh] max-w-[90vw] object-contain"
             />
             {navigator.share && (
               <button

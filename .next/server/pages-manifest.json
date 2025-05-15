@@ -3,7 +3,7 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/all": "pages/all.js",
-  "/api/designs": "pages/api/designs.js",
+  "/top": "pages/top.js",
   "/admin": "pages/admin.js",
-  "/top": "pages/top.js"
+  "/api/designs": "pages/api/designs.js"
 }
