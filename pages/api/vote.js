@@ -5,6 +5,9 @@ import {
   updateDoc,
   increment,
   collection,
+  query,
+  where,
+  getDocs,
   addDoc,
   serverTimestamp
 } from 'firebase/firestore';
@@ -21,29 +24,38 @@ export default async function handler(req, res) {
 
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
   const today = new Date().toISOString().slice(0, 10);
+  const voteLogsRef = collection(firestore, 'voteLogs');
 
   try {
-    const designRef = doc(firestore, 'designs', designId);
-    const designSnap = await getDoc(designRef);
-
-    if (!designSnap.exists()) {
-      return res.status(404).json({ error: 'Design not found' });
+    // Prevent multiple votes for same design by same IP on same day
+    const existingVoteQuery = query(
+      voteLogsRef,
+      where('ip', '==', ip),
+      where('date', '==', today),
+      where('designId', '==', designId)
+    );
+    const snapshot = await getDocs(existingVoteQuery);
+    if (!snapshot.empty) {
+      return res.status(400).json({
+        error: "SanChan says you've already voted for this design today! 🐾 Try a new one tomorrow!"
+      });
     }
 
-    // 1 vote per IP per day (enforced manually for now)
-    const voteLogsRef = collection(firestore, 'voteLogs');
-    const q = await getDoc(doc(firestore, 'voteLogs', `${ip}_${today}`));
-    if (q.exists()) {
-      return res.status(400).json({ error: "SanChan says you've already cast your daily paw of approval! 🐾 Come back tomorrow!" });
+    // Confirm the design exists
+    const designRef = doc(firestore, 'designs', designId);
+    const designSnap = await getDoc(designRef);
+    if (!designSnap.exists()) {
+      return res.status(404).json({ error: 'Design not found' });
     }
 
     // Increment vote
     await updateDoc(designRef, { votes: increment(1) });
 
-    // Log this IP+date in voteLogs
+    // Log vote with IP, date, and designId
     await addDoc(voteLogsRef, {
       ip,
       date: today,
+      designId,
       timestamp: serverTimestamp()
     });
 
